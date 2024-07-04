@@ -1,5 +1,6 @@
 
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author julio_busarello
@@ -7,13 +8,17 @@ import java.util.Scanner;
 public class Main {
 
     public static Scanner ler = new Scanner(System.in);
+    /*public static ArrayList<Onibus> onibus = new ArrayList();
+    public static ArrayList<Onibus> onibus = new ArrayList();
+    public static ArrayList<Onibus> onibus = new ArrayList();*/
     public static Onibus[] onibus = new Onibus[1200];
     public static Linha[] linha = new Linha[15];
     public static Viagem[] viagem = new Viagem[20];
 
     public static int nLinha = 0;
+    public static int nOnibus = 0;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int option;
         do {
             System.out.println("============ MENU ============");
@@ -43,25 +48,7 @@ public class Main {
         } while (option != 0);
     }
 
-    public static void linhas() {
-        int nParadas;
-        String terminal;
-
-        System.out.println("Informe o numero de paradas da linha: ");
-        nParadas = ler.nextInt();
-        terminal = ler.nextLine();
-        System.out.println("Informe o terminal da linha: ");
-        terminal = ler.nextLine();
-
-        linha[nLinha] = new Linha(nParadas, terminal);
-
-        nLinha++;
-        /*linha[1] = new Linha(5, "Centro");
-        linha[2] = new Linha(8, "Araponguinhas");
-        linha[3] = new Linha(6, "Tiroleses");*/
-    }
-
-    public static void criarOnibus() {
+    public static void criarOnibus() throws IOException {
         String placa;
         int capMaxima;
 
@@ -69,11 +56,32 @@ public class Main {
         placa = ler.next();
         System.out.println("Informe a capacidade do onibus: ");
         capMaxima = ler.nextInt();
+        System.out.println("Onibus cadastrado!");
 
-        onibus[0] = new Onibus(placa, capMaxima);
+        onibus[nOnibus] = new Onibus(placa, capMaxima);
+        
+        FileWriter arquivo = new FileWriter("registroOnibus.txt", true);
+        PrintWriter gravador = new PrintWriter(arquivo);
+        gravador.print(onibus);
+        gravador.close();
+        nOnibus++;
     }
 
-    public static void viagens() {
+    public static void linhas() throws IOException {
+        int nParadas;
+        String terminal;
+
+        System.out.println("Informe o numero de paradas da linha: ");
+        nParadas = Integer.parseInt(ler.nextLine().trim());
+        System.out.println("Informe o terminal da linha: ");
+        terminal = ler.nextLine();
+
+        linha[nLinha] = new Linha(nParadas, terminal);
+
+        nLinha++;
+    }
+
+    public static void viagens() throws IOException {
         int id = 0;
         String data;
         String hora;
@@ -84,7 +92,7 @@ public class Main {
         for (int i = 0; i < onibus.length; i++) {
             if (onibus[i] != null) {
                 System.out.println("-------------------------------------");
-                System.out.println("Id do onibus: " + i);
+                System.out.println("Id do onibus: " + (i + 1));
                 System.out.println("Placa do onibus: " + onibus[i].getPlaca());
             } else {
                 verify++;
@@ -95,19 +103,14 @@ public class Main {
         } else {
             System.out.println("-------------------------------------");
             System.out.println("Informe o ID do onibus: ");
-            id = ler.nextInt();
-            data = ler.nextLine();
-            if (onibus[id] != null) {
-                System.out.println("Informe a data da viagem: ");
-                data = ler.nextLine();
-                System.out.println("Informe a hora da viagem: ");
-                hora = ler.nextLine();
+            id = Integer.parseInt(ler.nextLine().trim());
+            if (onibus[id - 1] != null) {
                 verify = 0;
 
                 for (int i = 0; i < linha.length; i++) {
                     if (linha[i] != null) {
                         System.out.println("-------------------------------------");
-                        System.out.println("Numero da linha: " + i);
+                        System.out.println("Numero da linha: " + (i + 1));
                         System.out.println("Terminal da linha: " + linha[i].getTerminal());
                         System.out.println("Numero de paradas: " + linha[i].getnParadas());
                     } else {
@@ -119,10 +122,14 @@ public class Main {
                 } else {
                     System.out.println("-------------------------------------");
                     System.out.println("Informe o numero da linha: ");
-                    nLinha = ler.nextInt();
+                    nLinha = Integer.parseInt(ler.nextLine().trim());
+                    System.out.println("Informe a data da viagem: ");
+                    data = ler.nextLine();
+                    System.out.println("Informe a hora da viagem: ");
+                    hora = ler.nextLine();
 
                     // Onibus onibus, Linha linha, String data, String hora
-                    viagem[nViagem] = new Viagem(onibus[id], linha[nLinha], data, hora);
+                    viagem[nViagem] = new Viagem(onibus[id - 1], linha[nLinha - 1], data, hora);
                     nViagem++;
                     System.out.println("Viagem cadastrada com sucesso!");
                 }
@@ -132,7 +139,7 @@ public class Main {
         }
     }
 
-    public static void decorrer() {
+    public static void decorrer() throws IOException {
         int embarque;
         int desembarque;
         int verify = 0;
@@ -140,7 +147,7 @@ public class Main {
 
         for (int i = 0; i < viagem.length; i++) {
             if (viagem[i] != null) {
-                System.out.println(i + ". Data: " + viagem[i].getData() + ", Hora: " + viagem[i].getHora() + ", Onibus: " + viagem[i].getOnibus().getPlaca() + ",Linha: " + viagem[i].getLinha().getTerminal());
+                System.out.println((i + 1) + ". Data: " + viagem[i].getData() + ", Hora: " + viagem[i].getHora() + ", Onibus: " + viagem[i].getOnibus().getPlaca() + ",Linha: " + viagem[i].getLinha().getTerminal());
             } else {
                 verify++;
             }
@@ -149,20 +156,24 @@ public class Main {
             System.err.println("Nenhuma viagem cadastrada");
         } else {
             System.out.println("Informe o numero da viagem: ");
-            nViagem = ler.nextInt();
-            
-            for (int i = 0; i < viagem[0].getLinha().getnParadas(); i++) {
-                System.out.println("Quantos passageiros embarcaram? ");
-                embarque = ler.nextInt();
-                viagem[0].getOnibus().embarcar(embarque);
-                viagem[0].embarcar(embarque);
-                if (i != 0) {
-                    System.out.println("Informe quantas pessoas desembarcaram: ");
-                    desembarque = ler.nextInt();
-                    viagem[0].getOnibus().desembarcar(desembarque);
+            nViagem = Integer.parseInt(ler.nextLine().trim());
+
+            if (viagem[nViagem - 1] != null) {
+                for (int i = 0; i < viagem[nViagem - 1].getLinha().getnParadas(); i++) {
+                    System.out.println("Quantos passageiros embarcaram? ");
+                    embarque = Integer.parseInt(ler.nextLine().trim());
+                    viagem[nViagem - 1].getOnibus().embarcar(embarque);
+                    viagem[nViagem - 1].embarcar(embarque);
+                    if (i != 0) {
+                        System.out.println("Informe quantas pessoas desembarcaram: ");
+                        desembarque = Integer.parseInt(ler.nextLine().trim());
+                        viagem[nViagem - 1].getOnibus().desembarcar(desembarque);
+                    }
                 }
+                System.out.println("Passaram na viagem: " + viagem[nViagem - 1].getpassageirosAtual());
+            } else {
+                System.err.println("Viagem nao encontrada");
             }
-            System.out.println("Passaram na viagem: " + viagem[0].getpassageirosAtual());
         }
     }
 }
