@@ -37,11 +37,11 @@ public class Onibus {
         if (passageiros > this.capMaxima - this.passageirosAtual) {
             sobra = passageiros - (this.capMaxima - this.passageirosAtual);
             this.passageirosAtual = this.capMaxima;
-            System.out.println("O onibus esta com a lotacao maxima e ficaram de fora " + sobra + " passageiros"); 
+            System.out.println("O onibus esta com a lotacao maxima e ficaram de fora " + sobra + " passageiros");
         } else {
             this.passageirosAtual += passageiros;
             System.out.println("Subiram " + passageiros + " passageiros");
-            System.out.println("Agora o onibus possui "+this.passageirosAtual+" passageiros");
+            System.out.println("Agora o onibus possui " + this.passageirosAtual + " passageiros");
         }
     }
 
@@ -54,8 +54,12 @@ public class Onibus {
         } else {
             this.passageirosAtual -= passageiros;
             System.out.println("Desceram " + passageiros + " passageiros");
-            System.out.println("Agora o onibus possui "+this.passageirosAtual+" passageiros");
+            System.out.println("Agora o onibus possui " + this.passageirosAtual + " passageiros");
         }
+    }
+
+    public String toString() {
+        return this.placa + "," + this.capMaxima;
     }
 
 }

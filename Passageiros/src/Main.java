@@ -8,15 +8,14 @@ import java.util.*;
 public class Main {
 
     public static Scanner ler = new Scanner(System.in);
-    /*public static ArrayList<Onibus> onibus = new ArrayList();
-    public static ArrayList<Onibus> onibus = new ArrayList();
-    public static ArrayList<Onibus> onibus = new ArrayList();*/
-    public static Onibus[] onibus = new Onibus[1200];
+    public static ArrayList<Onibus> listaOnibus = new ArrayList();
+    /*public static ArrayList<Linha> listaLinha = new ArrayList();
+    public static ArrayList<Viagem> listaViagem = new ArrayList();*/
+    //public static Onibus[] onibus = new Onibus[1200];
     public static Linha[] linha = new Linha[15];
     public static Viagem[] viagem = new Viagem[20];
 
     public static int nLinha = 0;
-    public static int nOnibus = 0;
 
     public static void main(String[] args) throws IOException {
         int option;
@@ -58,13 +57,13 @@ public class Main {
         capMaxima = ler.nextInt();
         System.out.println("Onibus cadastrado!");
 
-        onibus[nOnibus] = new Onibus(placa, capMaxima);
+        Onibus onibus = new Onibus(placa,capMaxima);
+        listaOnibus.add(onibus);
         
         FileWriter arquivo = new FileWriter("registroOnibus.txt", true);
         PrintWriter gravador = new PrintWriter(arquivo);
-        gravador.print(onibus);
+        gravador.println(onibus);
         gravador.close();
-        nOnibus++;
     }
 
     public static void linhas() throws IOException {

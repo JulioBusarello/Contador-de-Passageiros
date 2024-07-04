@@ -27,4 +27,7 @@ public class Linha {
     }
 
     // ----- Métodos
+    public String toString() {
+        return this.nParadas + "," + this.terminal;
+    }
 }
