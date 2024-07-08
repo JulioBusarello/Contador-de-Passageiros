@@ -1,3 +1,4 @@
+
 /**
  * @author julio_busarello
  */
@@ -22,7 +23,6 @@ public class Viagem {
     }
 
     // ----- Getters and Setters
-
     public String getData() {
         return data;
     }
@@ -54,5 +54,9 @@ public class Viagem {
     // ----- Métodos
     public void embarcar(int passageiros) {
         this.passageirosAtual += passageiros;
+    }
+
+    public String toString() {
+        return this.data + " " + this.hora + " " + this.onibus + " " + this.linha;
     }
 }
