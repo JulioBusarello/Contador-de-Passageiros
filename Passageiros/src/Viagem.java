@@ -57,6 +57,6 @@ public class Viagem {
     }
 
     public String toString() {
-        return this.data + " " + this.hora + " " + this.onibus + " " + this.linha;
+        return this.data + "," + this.hora + "," + this.onibus + "," + this.linha;
     }
 }
