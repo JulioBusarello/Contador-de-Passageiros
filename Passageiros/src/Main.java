@@ -13,13 +13,21 @@ public class Main {
     public static ArrayList<Viagem> listaViagem = new ArrayList();
 
     public static void main(String[] args) throws IOException {
+        try {
+            // Recuperar todos os dados registrados anteriormente
+            recuperarOnibus();
+            recuperarLinha();
+
+        } catch (Exception e) {
+            System.err.println("Erro ao recuperar arquivos: " + e.getMessage());
+        }
+
         int option;
         do {
             System.out.println("============ MENU ============");
             System.out.println("= 1- Cadastrar um onibus     =");
             System.out.println("= 2- Cadastrar uma linha     =");
             System.out.println("= 3- Cadastrar uma viagem    =");
-            System.out.println("= 4- Decorrer uma viagem     =");
             System.out.println("= 0- Sair                    =");
             System.out.println("==============================");
             option = ler.nextInt();
@@ -32,9 +40,6 @@ public class Main {
                     break;
                 case 3:
                     cadastrarViagem();
-                    break;
-                case 4:
-                    decorrerViagem();
                     break;
                 default:
                     throw new AssertionError();
@@ -67,12 +72,12 @@ public class Main {
 
         System.out.println("Informe o numero de paradas da linha: ");
         nParadas = ler.nextInt();
+
         terminal = ler.nextLine();
         System.out.println("Informe o terminal da linha: ");
         terminal = ler.nextLine();
 
         Linha linha = new Linha(nParadas, terminal);
-
         listaLinha.add(linha);
 
         FileWriter arquivo = new FileWriter("registroLinha.txt", true);
@@ -106,53 +111,100 @@ public class Main {
                     System.out.println((i + 1) + "." + listaLinha.get(i).getTerminal());
                 }
                 System.out.print("Informe o numero da linha: ");
-                nLinha = Integer.parseInt(ler.nextLine().trim());
+                nLinha = ler.nextInt();
                 Linha linhaViagem = listaLinha.get(nLinha - 1);
 
                 System.out.println("Informe a data da viagem: ");
-                data = ler.nextLine();
+                data = ler.next();
+
                 System.out.println("Informe a hora da viagem: ");
-                hora = ler.nextLine();
+                hora = ler.next();
 
                 Viagem viagem = new Viagem(onibusViagem, linhaViagem, data, hora);
                 listaViagem.add(viagem);
 
                 System.out.println("A viagem foi cadastrada com sucesso!");
 
-                decorrerViagem(viagem, 0);
+                int embarque;
+                int totalEmbarque = 0;
+
+                System.out.println("Decorrendo viagem...");
+                for (int i = 0; i < viagem.getLinha().getnParadas(); i++) {
+                    if (i < 1) {
+                        System.out.println("Informe quantos passageiros embarcaram: ");
+                        embarque = ler.nextInt();
+                        viagem.getOnibus().embarcar(embarque);
+                    } else {
+                        System.out.println("Informe quantos passageiros embarcaram: ");
+                        embarque = ler.nextInt();
+                        viagem.getOnibus().embarcar(embarque);
+
+                        System.out.println("Informe quantos passageiros desembarcaram: ");
+                        viagem.getOnibus().desembarcar(ler.nextInt());
+                    }
+                    totalEmbarque += embarque;
+                }
+                System.out.println("Viagem concluida, passaram " + totalEmbarque + " passageiros na viagem.");
 
                 FileWriter arquivo = new FileWriter("registroViagem.txt", true);
                 PrintWriter gravador = new PrintWriter(arquivo);
                 gravador.println(viagem);
                 gravador.close();
+
             }
         }
     }
 
-    public static void decorrerViagem(Viagem viagem, int totalEmbarque) throws IOException {
-        int embarque;
+    private static void recuperarOnibus() throws IOException {
+        String aarq = "registroOnibus.txt";
+        String linha = "";
+        File arq = new File(aarq);
+        if (arq.exists()) {
 
-        if (listaViagem.isEmpty()) {
-            System.err.println("Nenhuma viagem cadastrada!");
-        } else {
-            System.out.println("Decorrendo viagem...");
-            for (int i = 0; i < viagem.getLinha().getnParadas(); i++) {
-                if (i < 1) {
-                    System.out.println("Informe quantos passageiros embarcaram: ");
-                    embarque = ler.nextInt();
-                    viagem.getOnibus().embarcar(embarque);
-                } else {
-                    System.out.println("Informe quantos passageiros embarcaram: ");
-                    embarque = ler.nextInt();
-                    viagem.getOnibus().embarcar(embarque);
-
-                    System.out.println("Informe quantos passageiros desembarcaram: ");
-                    viagem.getOnibus().desembarcar(ler.nextInt());
+            try {
+                FileReader abrindo = new FileReader(aarq);
+                BufferedReader leitor = new BufferedReader(abrindo);
+                while (true) {
+                    linha = leitor.readLine();
+                    if (linha == null) {
+                        break;
+                    }
+                    String[] linhaAtualOnibusArquivo = linha.split(",");
+                    Onibus onibus = new Onibus(linhaAtualOnibusArquivo[0], Integer.parseInt(linhaAtualOnibusArquivo[1]));
+                    listaOnibus.add(onibus);
                 }
-                totalEmbarque += embarque;
+                leitor.close();
+            } catch (Exception erro) {
+                System.err.println("Erro ao recuperar dados do arquivo registroOnibus.txt: " + erro.getMessage());
             }
-            System.out.println("Viagem concluida, passaram " + totalEmbarque + " passageiros na viagem.");
-        }
 
+        }
     }
+
+    private static void recuperarLinha() throws IOException {
+        String aarq = "registroLinha.txt";
+        String linhaCod = "";
+        File arq = new File(aarq);
+        if (arq.exists()) {
+
+            try {
+                FileReader abrindo = new FileReader(aarq);
+                BufferedReader leitor = new BufferedReader(abrindo);
+                while (true) {
+                    linhaCod = leitor.readLine();
+                    if (linhaCod == null) {
+                        break;
+                    }
+                    String[] linhaAtualLinhaArquivo = linhaCod.split(",");
+                    Linha linha = new Linha(Integer.parseInt(linhaAtualLinhaArquivo[0]), linhaAtualLinhaArquivo[1]);
+                    listaLinha.add(linha);
+                }
+                leitor.close();
+            } catch (Exception erro) {
+                System.err.println("Erro ao recuperar dados do arquivo registroOnibus.txt: " + erro.getMessage());
+            }
+
+        }
+    }
+
 }
