@@ -1,6 +1,4 @@
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
 
@@ -21,7 +19,7 @@ public class Main {
             recuperarLinha();
             recuperarViagem();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             // Caso não seja possível recuperar algum arquivo, informa o arquivo e o erro
             System.err.println("Erro ao recuperar arquivos: " + e.getMessage());
         }
@@ -75,9 +73,9 @@ public class Main {
 
         // Adicionando os dados no arquivo txt
         FileWriter arquivo = new FileWriter("registroOnibus.txt", true);
-        PrintWriter gravador = new PrintWriter(arquivo);
-        gravador.println(onibus);
-        gravador.close();
+        try (PrintWriter gravador = new PrintWriter(arquivo)) {
+            gravador.println(onibus);
+        }
 
         System.out.println("Onibus cadastrado com sucesso!");
     }
@@ -101,9 +99,9 @@ public class Main {
 
         // Adicionando os dados no arquivo txt
         FileWriter arquivo = new FileWriter("registroLinha.txt", true);
-        PrintWriter gravador = new PrintWriter(arquivo);
-        gravador.println(linha);
-        gravador.close();
+        try (PrintWriter gravador = new PrintWriter(arquivo)) {
+            gravador.println(linha);
+        }
 
         System.out.println("Linha cadastrada com sucesso!");
     }
@@ -184,9 +182,9 @@ public class Main {
 
                 // Salva os dados no arquivo txt
                 FileWriter arquivo = new FileWriter("registroViagem.txt", true);
-                PrintWriter gravador = new PrintWriter(arquivo);
-                gravador.println(viagem + "," + totalEmbarque);
-                gravador.close();
+                try (PrintWriter gravador = new PrintWriter(arquivo)) {
+                    gravador.println(viagem + "," + totalEmbarque);
+                }
 
             }
         }
@@ -197,28 +195,28 @@ public class Main {
     private static void recuperarOnibus() throws IOException {
         // Variaveis para Recuperar Onibus
         String aarq = "registroOnibus.txt";
-        String linha = "";
+        String linha;
 
         // Cria o objeto file para consultar o txt
         File arq = new File(aarq);
         if (arq.exists()) {
             try {
                 FileReader abrindo = new FileReader(aarq);
-                BufferedReader leitor = new BufferedReader(abrindo);
-                while (true) {
-                    linha = leitor.readLine();
-                    if (linha == null) {
-                        break;
+                try (BufferedReader leitor = new BufferedReader(abrindo)) {
+                    while (true) {
+                        linha = leitor.readLine();
+                        if (linha == null) {
+                            break;
+                        }
+                        // Cria um vetor separando as informações do txt por ","
+                        String[] linhaAtualOnibusArquivo = linha.split(",");
+                        
+                        // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
+                        Onibus onibus = new Onibus(linhaAtualOnibusArquivo[0], Integer.parseInt(linhaAtualOnibusArquivo[1]));
+                        listaOnibus.add(onibus);
                     }
-                    // Cria um vetor separando as informações do txt por ","
-                    String[] linhaAtualOnibusArquivo = linha.split(",");
-
-                    // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
-                    Onibus onibus = new Onibus(linhaAtualOnibusArquivo[0], Integer.parseInt(linhaAtualOnibusArquivo[1]));
-                    listaOnibus.add(onibus);
                 }
-                leitor.close();
-            } catch (Exception erro) {
+            } catch (IOException erro) {
                 // Se houve algum erro no arquivo na hora de carregar
                 System.err.println("Erro ao recuperar dados do arquivo registroOnibus.txt: " + erro.getMessage());
             }
@@ -230,28 +228,28 @@ public class Main {
     private static void recuperarLinha() throws IOException {
         // Variaveis para Recuperar Onibus
         String aarq = "registroLinha.txt";
-        String linhaCod = "";
+        String linhaCod;
 
         // Cria o objeto file para consultar o txt
         File arq = new File(aarq);
         if (arq.exists()) {
             try {
                 FileReader abrindo = new FileReader(aarq);
-                BufferedReader leitor = new BufferedReader(abrindo);
-                while (true) {
-                    linhaCod = leitor.readLine();
-                    if (linhaCod == null) {
-                        break;
+                try (BufferedReader leitor = new BufferedReader(abrindo)) {
+                    while (true) {
+                        linhaCod = leitor.readLine();
+                        if (linhaCod == null) {
+                            break;
+                        }
+                        // Cria um vetor separando as informações do txt por ","
+                        String[] linhaAtualLinhaArquivo = linhaCod.split(",");
+                        
+                        // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
+                        Linha linha = new Linha(Integer.parseInt(linhaAtualLinhaArquivo[0]), linhaAtualLinhaArquivo[1]);
+                        listaLinha.add(linha);
                     }
-                    // Cria um vetor separando as informações do txt por ","
-                    String[] linhaAtualLinhaArquivo = linhaCod.split(",");
-
-                    // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
-                    Linha linha = new Linha(Integer.parseInt(linhaAtualLinhaArquivo[0]), linhaAtualLinhaArquivo[1]);
-                    listaLinha.add(linha);
                 }
-                leitor.close();
-            } catch (Exception erro) {
+            } catch (IOException erro) {
                 // Se houve algum erro no arquivo na hora de carregar
                 System.err.println("Erro ao recuperar dados do arquivo registroLinha.txt: " + erro.getMessage());
             }
@@ -263,7 +261,7 @@ public class Main {
     private static void recuperarViagem() throws IOException {
         // Variaveis para Recuperar Onibus
         String aarq = "registroViagem.txt";
-        String linhaCod = "";
+        String linhaCod;
 
         // Cria o objeto file para consultar o txt
         File arq = new File(aarq);
@@ -271,25 +269,25 @@ public class Main {
 
             try {
                 FileReader abrindo = new FileReader(aarq);
-                BufferedReader leitor = new BufferedReader(abrindo);
-                while (true) {
-                    linhaCod = leitor.readLine();
-                    if (linhaCod == null) {
-                        break;
+                try (BufferedReader leitor = new BufferedReader(abrindo)) {
+                    while (true) {
+                        linhaCod = leitor.readLine();
+                        if (linhaCod == null) {
+                            break;
+                        }
+                        // Cria um vetor separando as informações do txt por ","
+                        String[] linhaAtualViagemArquivo = linhaCod.split(",");
+                        
+                        // Recupera a Linha e o Onibus utilizados na Viagem
+                        Linha recLinha = new Linha(Integer.parseInt(linhaAtualViagemArquivo[4]), linhaAtualViagemArquivo[5]);
+                        Onibus recOnibus = new Onibus(linhaAtualViagemArquivo[2], Integer.parseInt(linhaAtualViagemArquivo[3]));
+                        
+                        // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
+                        Viagem viagem = new Viagem(recOnibus, recLinha, linhaAtualViagemArquivo[0], linhaAtualViagemArquivo[1]);
+                        listaViagem.add(viagem);
                     }
-                    // Cria um vetor separando as informações do txt por ","
-                    String[] linhaAtualViagemArquivo = linhaCod.split(",");
-
-                    // Recupera a Linha e o Onibus utilizados na Viagem
-                    Linha recLinha = new Linha(Integer.parseInt(linhaAtualViagemArquivo[4]), linhaAtualViagemArquivo[5]);
-                    Onibus recOnibus = new Onibus(linhaAtualViagemArquivo[2], Integer.parseInt(linhaAtualViagemArquivo[3]));
-
-                    // Cria o novo objeto pegando a coordenada do vetor e readiciona na lista
-                    Viagem viagem = new Viagem(recOnibus, recLinha, linhaAtualViagemArquivo[0], linhaAtualViagemArquivo[1]);
-                    listaViagem.add(viagem);
                 }
-                leitor.close();
-            } catch (Exception erro) {
+            } catch (IOException erro) {
                 // Se houve algum erro no arquivo na hora de carregar
                 System.err.println("Erro ao recuperar dados do arquivo registroViagem.txt: " + erro.getMessage());
             }
