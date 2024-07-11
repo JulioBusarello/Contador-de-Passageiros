@@ -46,12 +46,13 @@ public class Main {
                     cadastrarViagem();
                     break;
                 case 0:
+                    System.out.println("Voce escolheu sair.");
                     break;
                 // Caso nenhuma opção acima for utilizada
                 default:
                     System.err.println("Opcao invalida!");
             }
-        } while (true);
+        } while (option != 0);
     }
 
     // ----- Funções de cadastro
